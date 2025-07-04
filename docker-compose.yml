@@ -67,8 +67,8 @@ services:
     container_name: be1
     hostname: be1
     environment:
-      - FE_SERVERS=172.20.0.10:9030
-      - BE_ADDR=be1:9050
+      - FE_SERVERS=fe1:172.20.0.11:9030,fe2:172.20.0.12:9030,fe3:172.20.0.13:9030
+      - BE_ADDR=172.20.0.21:9050
     volumes:
       - ./be1/storage:/opt/apache-doris/be/storage
       - ./be1/conf/be.conf:/opt/apache-doris/be/conf/be.conf
@@ -86,8 +86,8 @@ services:
     container_name: be2
     hostname: be2
     environment:
-      - FE_SERVERS=172.20.0.10:9030
-      - BE_ADDR=be2:9050
+      - FE_SERVERS=fe1:172.20.0.11:9030,fe2:172.20.0.12:9030,fe3:172.20.0.13:9030
+      - BE_ADDR=172.20.0.22:9050
     volumes:
       - ./be2/storage:/opt/apache-doris/be/storage
       - ./be2/conf/be.conf:/opt/apache-doris/be/conf/be.conf
@@ -105,8 +105,8 @@ services:
     container_name: be3
     hostname: be3
     environment:
-      - FE_SERVERS=172.20.0.10:9030
-      - BE_ADDR=be3:9050
+      - FE_SERVERS=fe1:172.20.0.11:9030,fe2:172.20.0.12:9030,fe3:172.20.0.13:9030
+      - BE_ADDR=172.20.0.23:9050
     volumes:
       - ./be3/storage:/opt/apache-doris/be/storage
       - ./be3/conf/be.conf:/opt/apache-doris/be/conf/be.conf
