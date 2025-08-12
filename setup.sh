@@ -126,12 +126,12 @@ validate_setup() {
     
     # Check required directories
     required_dirs=(
-        "fe1" "fe1/conf" "fe1/doris-meta" "fe1/log"
-        "fe2" "fe2/conf" "fe2/doris-meta" "fe2/log"
-        "fe3" "fe3/conf" "fe3/doris-meta" "fe3/log"
-        "be1" "be1/conf" "be1/storage" "be1/log"
-        "be2" "be2/conf" "be2/storage" "be2/log"
-        "be3" "be3/conf" "be3/storage" "be3/log"
+        "fe1" "fe1/doris-meta" "fe1/log"
+        "fe2" "fe2/doris-meta" "fe2/log"
+        "fe3" "fe3/doris-meta" "fe3/log"
+        "be1" "be1/storage" "be1/log"
+        "be2" "be2/storage" "be2/log"
+        "be3" "be3/storage" "be3/log"
     )
     
     for dir in "${required_dirs[@]}"; do

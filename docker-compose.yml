@@ -18,60 +18,60 @@ services:
         ipv4_address: 172.20.0.10
 
   fe1:
-    image: apache/doris:fe-2.1.9
+    image: apache/doris:fe-2.1.10
     container_name: fe1
     hostname: fe1
     environment:
       - FE_ID=1
       - FE_SERVERS=fe1:172.20.0.11:9010,fe2:172.20.0.12:9010,fe3:172.20.0.13:9010
+      - TZ=Asia/Shanghai
     volumes:
       - ./fe1/doris-meta:/opt/apache-doris/fe/doris-meta
-      - ./fe1/conf/fe.conf:/opt/apache-doris/fe/conf/fe.conf
       - ./fe1/log:/opt/apache-doris/fe/log
     networks:
       doris_net:
         ipv4_address: 172.20.0.11
 
   fe2:
-    image: apache/doris:fe-2.1.9
+    image: apache/doris:fe-2.1.10
     container_name: fe2
     hostname: fe2
     environment:
       - FE_ID=2
       - FE_SERVERS=fe1:172.20.0.11:9010,fe2:172.20.0.12:9010,fe3:172.20.0.13:9010
+      - TZ=Asia/Shanghai
     volumes:
       - ./fe2/doris-meta:/opt/apache-doris/fe/doris-meta
-      - ./fe2/conf/fe.conf:/opt/apache-doris/fe/conf/fe.conf
       - ./fe2/log:/opt/apache-doris/fe/log
     networks:
       doris_net:
         ipv4_address: 172.20.0.12
 
   fe3:
-    image: apache/doris:fe-2.1.9
+    image: apache/doris:fe-2.1.10
     container_name: fe3
     hostname: fe3
     environment:
       - FE_ID=3
       - FE_SERVERS=fe1:172.20.0.11:9010,fe2:172.20.0.12:9010,fe3:172.20.0.13:9010
+      - TZ=Asia/Shanghai
     volumes:
       - ./fe3/doris-meta:/opt/apache-doris/fe/doris-meta
-      - ./fe3/conf/fe.conf:/opt/apache-doris/fe/conf/fe.conf
       - ./fe3/log:/opt/apache-doris/fe/log
     networks:
       doris_net:
         ipv4_address: 172.20.0.13
 
   be1:
-    image: apache/doris:be-2.1.9
+    image: apache/doris:be-2.1.10
     container_name: be1
     hostname: be1
     environment:
       - FE_SERVERS=fe1:172.20.0.11:9030,fe2:172.20.0.12:9030,fe3:172.20.0.13:9030
       - BE_ADDR=172.20.0.21:9050
+      - TZ=Asia/Shanghai
     volumes:
       - ./be1/storage:/opt/apache-doris/be/storage
-      - ./be1/conf/be.conf:/opt/apache-doris/be/conf/be.conf
       - ./be1/log:/opt/apache-doris/be/log
     depends_on:
       - fe1
@@ -82,15 +82,15 @@ services:
         ipv4_address: 172.20.0.21
 
   be2:
-    image: apache/doris:be-2.1.9
+    image: apache/doris:be-2.1.10
     container_name: be2
     hostname: be2
     environment:
       - FE_SERVERS=fe1:172.20.0.11:9030,fe2:172.20.0.12:9030,fe3:172.20.0.13:9030
       - BE_ADDR=172.20.0.22:9050
+      - TZ=Asia/Shanghai
     volumes:
       - ./be2/storage:/opt/apache-doris/be/storage
-      - ./be2/conf/be.conf:/opt/apache-doris/be/conf/be.conf
       - ./be2/log:/opt/apache-doris/be/log
     depends_on:
       - fe1
@@ -101,15 +101,15 @@ services:
         ipv4_address: 172.20.0.22
 
   be3:
-    image: apache/doris:be-2.1.9
+    image: apache/doris:be-2.1.10
     container_name: be3
     hostname: be3
     environment:
       - FE_SERVERS=fe1:172.20.0.11:9030,fe2:172.20.0.12:9030,fe3:172.20.0.13:9030
       - BE_ADDR=172.20.0.23:9050
+      - TZ=Asia/Shanghai
     volumes:
       - ./be3/storage:/opt/apache-doris/be/storage
-      - ./be3/conf/be.conf:/opt/apache-doris/be/conf/be.conf
       - ./be3/log:/opt/apache-doris/be/log
     depends_on:
       - fe1
