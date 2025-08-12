@@ -1,3 +1,5 @@
 **/storage
 **/log
 **/doris-meta
+**/flink-data
+**/minio-data

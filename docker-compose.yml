@@ -119,6 +119,92 @@ services:
       doris_net:
         ipv4_address: 172.20.0.23
 
+  flink-jobmanager:
+    image: flink:1.19
+    container_name: flink-jobmanager
+    ports:
+      - "8081:8081"  # Flink Web UI
+      - "6123:6123"  # JobManager RPC
+    environment:
+      - JOB_MANAGER_RPC_ADDRESS=flink-jobmanager
+      - |
+        FLINK_PROPERTIES=
+        jobmanager.rpc.address: flink-jobmanager
+        state.backend: filesystem
+        state.checkpoints.dir: file:///flink-data/checkpoints
+    volumes:
+      - ./flink-data:/flink-data
+    command: jobmanager
+    networks:
+      doris_net:
+        ipv4_address: 172.20.0.30
+
+  flink-taskmanager:
+    image: flink:1.19
+    container_name: flink-taskmanager
+    environment:
+      - JOB_MANAGER_RPC_ADDRESS=flink-jobmanager
+      - |
+        FLINK_PROPERTIES=
+        jobmanager.rpc.address: flink-jobmanager
+        taskmanager.numberOfTaskSlots: 2
+        state.backend: filesystem
+        state.checkpoints.dir: file:///flink-data/checkpoints
+    volumes:
+      - ./flink-data:/flink-data
+    depends_on:
+      - flink-jobmanager
+    command: taskmanager
+    networks:
+      doris_net:
+        ipv4_address: 172.20.0.31
+        
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.4.0
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+    networks:
+      doris_net:
+        ipv4_address: 172.20.0.40
+
+  kafka:
+    image: confluentinc/cp-kafka:7.4.0
+    container_name: kafka
+    ports:
+      - "9092:9092"
+      - "9094:9094"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:9094
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    depends_on:
+      - zookeeper
+    networks:
+      doris_net:
+        ipv4_address: 172.20.0.41
+        
+  minio:
+    image: minio/minio
+    container_name: minio
+    ports:
+      - "9000:9000"  # API
+      - "9001:9001"  # Console
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    volumes:
+      - ./minio-data:/data
+    command: server --console-address ":9001" /data
+    networks:
+      doris_net:
+        ipv4_address: 172.20.0.50
+
+
 networks:
   doris_net:
     driver: bridge

@@ -63,19 +63,16 @@ setup_doris_cluster() {
     
     # FE1 directories and files
     check_and_create_dir "fe1" "FE1 main directory"
-    check_and_create_dir "fe1/conf" "FE1 config directory"
     check_and_create_dir "fe1/doris-meta" "FE1 metadata directory"
     check_and_create_dir "fe1/log" "FE1 log directory"
     
     # FE2 directories and files
     check_and_create_dir "fe2" "FE2 main directory"
-    check_and_create_dir "fe2/conf" "FE2 config directory"
     check_and_create_dir "fe2/doris-meta" "FE2 metadata directory"
     check_and_create_dir "fe2/log" "FE2 log directory"
     
     # FE3 directories and files
     check_and_create_dir "fe3" "FE3 main directory"
-    check_and_create_dir "fe3/conf" "FE3 config directory"
     check_and_create_dir "fe3/doris-meta" "FE3 metadata directory"
     check_and_create_dir "fe3/log" "FE3 log directory"
     
@@ -84,19 +81,16 @@ setup_doris_cluster() {
     
     # BE1 directories and files
     check_and_create_dir "be1" "BE1 main directory"
-    check_and_create_dir "be1/conf" "BE1 config directory"
     check_and_create_dir "be1/storage" "BE1 storage directory"
     check_and_create_dir "be1/log" "BE1 log directory"
     
     # BE2 directories and files
     check_and_create_dir "be2" "BE2 main directory"
-    check_and_create_dir "be2/conf" "BE2 config directory"
     check_and_create_dir "be2/storage" "BE2 storage directory"
     check_and_create_dir "be2/log" "BE2 log directory"
     
     # BE3 directories and files
     check_and_create_dir "be3" "BE3 main directory"
-    check_and_create_dir "be3/conf" "BE3 config directory"
     check_and_create_dir "be3/storage" "BE3 storage directory"
     check_and_create_dir "be3/log" "BE3 log directory"
     
