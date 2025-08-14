@@ -54,6 +54,9 @@ The cluster consists of:
 4. **Access the Web UI**
    - Open `http://localhost:8030` in your browser
    - Default credentials: `root` / `(empty password)`
+   - `localhost:9094` for kafka
+   - `localhost:9000` for minio
+   - `localhost:8081` for flink
 
 ## Setup Script
 
