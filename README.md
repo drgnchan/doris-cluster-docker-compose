@@ -8,12 +8,22 @@ The cluster consists of:
 - **3 Frontend (FE) nodes** for metadata management and query coordination
 - **3 Backend (BE) nodes** for data storage and computation
 - **1 HAProxy load balancer** for high availability and session management
+- **1 Kafka cluster** for message streaming
+- **1 Flink cluster** for stream processing
+- **1 Zookeeper instance** for distributed coordination
+- **1 MinIO instance** for object storage
+- **1 Kafka UI** for Kafka cluster management
 
 ### Network Configuration
 - **Network**: `172.20.0.0/24`
 - **HAProxy**: `172.20.0.10`
 - **FE nodes**: `172.20.0.11`, `172.20.0.12`, `172.20.0.13`
 - **BE nodes**: `172.20.0.21`, `172.20.0.22`, `172.20.0.23`
+- **Flink**: `172.20.0.30`, `172.20.0.31`
+- **Zookeeper**: `172.20.0.40`
+- **Kafka**: `172.20.0.41`
+- **MinIO**: `172.20.0.50`
+- **Kafka UI**: `172.20.0.60`
 
 ## Prerequisites
 
@@ -26,13 +36,13 @@ The cluster consists of:
 
 1. **Clone the repository**
    ```bash
-   git clone <repository-url>
-   cd doris-docker
+   git clone https://github.com/drgnchan/doris-cluster-docker-compose.git
+   cd doris-cluster-docker-compose
    ```
 
 2. **Run the setup script (recommended)**
    ```bash
-   ./setup.sh
+   ./setup.sh setup
    ```
    This will automatically create all necessary directories and configuration files.
 
@@ -41,13 +51,7 @@ The cluster consists of:
    docker-compose up -d
    ```
 
-4. **Check cluster status**
-   ```bash
-   docker-compose ps
-   docker-compose logs -f
-   ```
-
-5. **Access the Web UI**
+4. **Access the Web UI**
    - Open `http://localhost:8030` in your browser
    - Default credentials: `root` / `(empty password)`
 
@@ -105,102 +109,28 @@ The included `setup.sh` script helps manage the cluster setup and maintenance:
   - `9050`: Heartbeat service
   - `9060`: RPC communication
 
-## Directory Structure
+### Kafka UI
+- **Container**: `kafka-ui`
+- **Image**: `provectuslabs/kafka-ui:latest`
+- **Ports**:
+  - `9090`: Web UI
+- **Role**: Kafka cluster management and monitoring
 
-```
-doris-docker/
-├── docker-compose.yml          # Main compose file
-├── haproxy.cfg                # HAProxy configuration
-├── setup.sh                  # Setup and maintenance script
-├── fe1/
-│   ├── conf/fe.conf           # FE1 configuration
-│   ├── doris-meta/            # FE1 metadata storage
-│   └── log/                   # FE1 logs
-├── fe2/
-│   ├── conf/fe.conf           # FE2 configuration
-│   ├── doris-meta/            # FE2 metadata storage
-│   └── log/                   # FE2 logs
-├── fe3/
-│   ├── conf/fe.conf           # FE3 configuration
-│   ├── doris-meta/            # FE3 metadata storage
-│   └── log/                   # FE3 logs
-├── be1/
-│   ├── conf/be.conf           # BE1 configuration
-│   ├── storage/               # BE1 data storage
-│   └── log/                   # BE1 logs
-├── be2/
-│   ├── conf/be.conf           # BE2 configuration
-│   ├── storage/               # BE2 data storage
-│   └── log/                   # BE2 logs
-└── be3/
-    ├── conf/be.conf           # BE3 configuration
-    ├── storage/               # BE3 data storage
-    └── log/                   # BE3 logs
-```
+### Flink
+- **Container**: `flink-jobmanager`, `flink-taskmanager`
+- **Image**: `flink:1.19`
+- **Ports**:
+  - `8081`: Web UI
+  - `6123`: JobManager RPC
+- **Role**: Stream processing and batch processing
 
-## Configuration
-
-### Key Environment Variables
-
-#### FE Nodes
-- `FE_ID`: Unique identifier for each FE node (1, 2, 3)
-- `FE_SERVERS`: List of all FE nodes with their IPs and edit log ports
-  - Format: `fe1:172.20.0.11:9010,fe2:172.20.0.12:9010,fe3:172.20.0.13:9010`
-
-#### BE Nodes
-- `FE_SERVERS`: List of FE nodes for BE to connect to
-- `BE_ADDR`: BE node's own address for registration
-
-### Network Configuration
-- All services use fixed IP addresses within the `172.20.0.0/24` subnet
-- This ensures consistent connectivity and avoids hostname resolution issues
-
-## Operations
-
-### Starting the Cluster
-```bash
-# Start all services
-docker-compose up -d
-
-# Start specific services
-docker-compose up -d fe1 fe2 fe3
-docker-compose up -d be1 be2 be3
-docker-compose up -d haproxy
-```
-
-### Stopping the Cluster
-```bash
-# Stop all services
-docker-compose down
-
-# Stop specific services
-docker-compose stop be1 be2 be3
-```
-
-### Checking Status
-```bash
-# View all container status
-docker-compose ps
-
-# View logs
-docker-compose logs -f fe1
-docker-compose logs -f be1
-docker-compose logs -f haproxy
-
-# View cluster status via MySQL client
-mysql -h 127.0.0.1 -P 9030 -u root -e "SHOW FRONTENDS;"
-mysql -h 127.0.0.1 -P 9030 -u root -e "SHOW BACKENDS;"
-```
-
-### Scaling Operations
-```bash
-# Restart specific nodes
-docker-compose restart fe1
-docker-compose restart be1
-
-# Update configuration and restart
-docker-compose up -d --force-recreate fe1
-```
+### MinIO
+- **Container**: `minio`
+- **Image**: `minio/minio`
+- **Ports**:
+  - `9000`: API
+  - `9001`: Console
+- **Role**: Object storage service
 
 ## Connecting to Doris
 
@@ -227,92 +157,6 @@ String username = "root";
 String password = "";
 ```
 
-## Troubleshooting
-
-### Common Issues
-
-1. **Missing directories or config files**
-   - Run `./setup.sh validate` to check what directories are missing
-   - Run `./setup.sh setup` to create missing directories
-   - Ensure configuration files exist in the conf directories
-
-2. **BE nodes cannot register with FE**
-   - Check if FE nodes are running and healthy
-   - Verify network connectivity between containers
-   - Check FE_SERVERS configuration in BE environment variables
-
-3. **Session timeouts in Web UI**
-   - This is resolved by HAProxy session stickiness configuration
-   - Clear browser cookies and retry
-
-4. **Container startup failures**
-   - Check logs: `docker-compose logs <service-name>`
-   - Verify configuration files are correctly mounted
-   - Ensure sufficient disk space and memory
-
-5. **Permission denied errors**
-   - Run `./setup.sh setup` to fix directory permissions
-   - Ensure Docker has access to the project directory
-
-### Health Checks
-```bash
-# Check if all containers are running
-docker-compose ps
-
-# Check container resource usage
-docker stats
-
-# Verify network connectivity
-docker-compose exec fe1 ping 172.20.0.21
-docker-compose exec be1 ping 172.20.0.11
-```
-
-### Log Locations
-- **FE logs**: `./fe{1,2,3}/log/`
-- **BE logs**: `./be{1,2,3}/log/`
-- **HAProxy logs**: `docker-compose logs haproxy`
-
-## Performance Tuning
-
-### Resource Allocation
-- **FE nodes**: Minimum 2GB RAM each
-- **BE nodes**: Minimum 4GB RAM each (adjust based on data size)
-- **Storage**: SSD recommended for better performance
-
-### Configuration Tuning
-- Adjust JVM heap sizes in `fe.conf` and `be.conf`
-- Configure appropriate storage paths in BE configurations
-- Tune HAProxy timeouts based on query complexity
-
-## Security Considerations
-
-- Change default root password after initial setup
-- Configure firewall rules to restrict access to cluster ports
-- Use SSL/TLS for production deployments
-- Implement proper backup strategies for metadata and data
-
-## Backup and Recovery
-
-### Metadata Backup
-```bash
-# Backup FE metadata
-docker-compose exec fe1 cp -r /opt/apache-doris/fe/doris-meta /backup/
-```
-
-### Data Backup
-- Use Doris native backup/restore functionality
-- Regular snapshots of BE storage volumes
-
-## Monitoring
-
-### Built-in Monitoring
-- FE Web UI: `http://localhost:8030`
-- BE Web UI: Access individual BE nodes directly or via port forwarding
-
-### External Monitoring
-- Integrate with Prometheus/Grafana for advanced monitoring
-- Monitor Docker container metrics
-- Set up alerting for cluster health
 
 ## Contributing
 
