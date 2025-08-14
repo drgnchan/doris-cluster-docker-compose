@@ -57,6 +57,8 @@ The cluster consists of:
    - `localhost:9094` for kafka
    - `localhost:9000` for minio
    - `localhost:8081` for flink
+   - `localhost:9090` for kafka-ui
+   - `localhost:9001` for minio-console; default user: `minioadmin` password: `minioadmin`
 
 ## Setup Script
 
